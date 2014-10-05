@@ -2,12 +2,24 @@
 <html>
 	<head>
 		<title>Wizard.JS example</title>
+		<link href="../wizard.css" type="text/css" rel="stylesheet" />
 		<script type="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
 		<script type="../wizard.js" type="text/javascript"></script>
+		<script type="text/javascrpit">
+			
+			$(document).ready(function(e){
+				$.wizard({
+					validate: function(e){
+						console.log("Validating: " + e.toString());	
+					}
+				});
+			});
+
+		</script>
 	</head>
 	<body>
 		<form class="wizard">
-			<div class="page">
+			<div class="page active">
 				<span class="title">Wizard Step 1</span>
 				<div class="question">
 					How was your day?
@@ -39,6 +51,11 @@
 				<div class="options">
 					<input type="text" name="mathQuestion" value=""  placeholder="Enter your answer here" />
 				</div>
+			</div>
+			<div class="controls">
+				<button class="next-button">Next</button>
+				<button class="prev-button">Prev</button>
+				<button type="submit" class="finish-button">Submit</button>
 			</div>
 		</form>
 	</body>

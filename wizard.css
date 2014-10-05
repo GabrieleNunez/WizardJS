@@ -1,0 +1,9 @@
+.wizard .page{
+	display:none;
+}
+.wizard .page.active{
+	display:block;
+}
+.wizard  .page.active .error{
+	color:#cc0000;
+}
