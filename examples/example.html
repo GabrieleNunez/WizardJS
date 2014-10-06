@@ -5,16 +5,20 @@
 		<link href="../wizard.css" type="text/css" rel="stylesheet" />
 		<script type="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
 		<script type="../wizard.js" type="text/javascript"></script>
-		<script type="text/javascrpit">
-			
-			$(document).ready(function(e){
+		<script type="text/javascript">
+		
+		(function($){
+
+				$(document).ready(function(){
 				$.wizard({
 					validate: function(e){
 						console.log("Validating: " + e.toString());	
+						return true;
 					}
 				});
 			});
-
+		})(jQuery);
+			
 		</script>
 	</head>
 	<body>
