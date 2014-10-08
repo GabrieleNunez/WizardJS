@@ -9,50 +9,68 @@ $.wizardDefault = function(){
 				wizard : ".wizard"
 		   };
 }
+$.__wizardGetContainer = function(wizard){
+	return $(wizard);
+}
 $.__wizardPageCount = function(wizard){
 	return $(wizard + " .page").length;
 }
 $.__wizardCurrentPage = function(wizard){
 	var currentStep = $(wizard + " .page.active");
-	return currenStep;
+	return currentStep;
 }
-$.__wizardGetCurrentPageIndex = function(wizard){
+$.__wizardCurrentPageIndex = function(wizard){
+	var pageIndex = false;
 	$(wizard + " .page").each(function(index,item){
 		if($(item).hasClass("active")){
-			return index;
+			pageIndex =  index;
+			return false;
 		}
 	});
-	return false;
+	return pageIndex;
 }
 $.__wizardStep = function(wizard,validateCall,pageIndex){
-	var pageCount = $.__wizardPagCount(wizard);
-	var currentStep = $.__wizardCurrenPage(wizard);
-	var index = $.__wizadCurrentPageIndex(wizard);
+	var pageCount = $.__wizardPageCount(wizard);
+	var currentStep = $.__wizardCurrentPage(wizard);
+	var index = pageIndex;
+	var goingBack = index < $.__wizardCurrentPageIndex(wizard);
+	var finishButton =  $(wizard + " .controls .finish-button");
+	var prevButton = $(wizard + " .controls .prev-button");
+	var nextButton = $(wizard + " .controls .next-button");
 	var nextStep = null;
 
 	//check to see if an index was found
 	
 	if(index !== false){
-		$(wizard + " .controls .finish-button").hide();
-		$(wizard + " .controls .prev-button").show();
-		$(wizard + " .controls .next-button").show();
+		$(finishButton).hide();
+		$(prevButton).show();
+		$(nextButton).show();
+		console.log(index);
+		console.log(pageCount);
 		if((index === (pageCount - 1))){
 			//show finish button
-			$(wizard + " .controls .next-button").hide();
-			$(wizard + " .controls .finish-button").show();
+			$(nextButton).hide();
+			$(prevButton).show();
+			$(finishButton).show();
 		}
 		if(index === 0){
-			$(wizard + " .controls .prev-button").hide();
+			$(prevButton).hide();
 		}
-		var result = validateCall(currentStep);
+		
+		var result  = null;
+
+		if(goingBack){
+			result = true;
+		}else{
+			result = validateCall(currentStep);
+		}
 		if(result === true){
 
 			$(wizard + " .page.active .errors").remove();
 			$(currentStep).removeClass("hasErrors");
 			$(currentStep).removeClass("active");
-			
-			nextStep = $(currentStep).next();
-
+			nextStep  = $(wizard + " .page").get(index);
+			console.log(nextStep);
 			$(nextStep).addClass("active");
 			$(wizard).trigger("wizard.pageInit",nextStep);
 		}
@@ -106,8 +124,14 @@ $.wizard = function(callbacks,options){
 
 	$(wizard + " .controls .next-button").on("click",function(e){
 		e.preventDefault();
-		var currentIndex = $.__wizardCurrentPageIndex();
-		$.__wizardStep(options.wizard,callbacks.validate,currentIndex++);
+		var currentIndex = $.__wizardCurrentPageIndex(wizard);
+		$.__wizardStep(options.wizard,callbacks.validate,++currentIndex);
+		return false;
+	});
+	$(wizard + " .controls .prev-button").on("click",function(e){
+		e.preventDefault();
+		var currentIndex = $.__wizardCurrentPageIndex(wizard);
+		$.__wizardStep(options.wizard,callbacks.validate,--currentIndex);
 		return false;
 	});
 }
