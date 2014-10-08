@@ -6,17 +6,27 @@
 		<script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
 		<script src="../wizard.js" type="text/javascript"></script>
 		<script type="text/javascript">
-		(function($){
-				$(document).ready(function(){
+			$(document).ready(function(){
 				$.wizard({
-					validate: function(e){
-						 	
-						return true;
+					//supply a generic validate function
+					validate: function(pageIndex){
+						//select all inputs and selects in the active page of a wizard
+					    $(".wizard .page.active .options input,.wizard .page.active .options input:checked, .wizard .page.active .options select").each(function(index,item){
+					    
+					    	if(!$(item).val() && !$(item).val().length){
+					    		//push an error onto the wizard
+					    		var error = {
+				    						name: $(item).attr("name"),
+				    						message: "Input has no value or length"
+					    		};
+					    		$.wizardError(error);
+					    	}
+					    });
+					    //if the wizard has errors return false to fail our validation
+						return !$.wizardHasErrors(); 
 					}
 				});
-			});
-		})(jQuery);
-			
+		});
 		</script>
 	</head>
 	<body>
@@ -27,9 +37,9 @@
 					How was your day?
 				</div>
 				<div class="options">
-					<input type="radio" name="response" value="Pleasant" />
-					<input type="radio" name="response" value="Terrible" />
-					<input type="radio" name="response" value="I AM THE NIGHT" />
+					<input type="text" name="response1" value="" placeholder="How are you doing" />
+					<input type="text" name="response2" value="" placeholder="Where are you from" />
+					<input type="text" name="response3" value="" placeholder="Who Are you" />
 				</div>
 			</div>
 			<div class="page">
@@ -41,8 +51,8 @@
 					<textarea>
 						Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse in ultrices enim. Curabitur orci lacus, suscipit vel vulputate et, ultrices in nibh. Ut rhoncus diam at iaculis ultricies. Cras euismod, neque in malesuada euismod, elit leo consequat neque, in finibus dolor nunc at massa. Mauris vel ex id dui eleifend malesuada. Praesent nibh sapien, ornare sed nibh sit amet, ultrices ultricies nibh. Morbi quis lacinia velit. Donec laoreet maximus neque id fermentum. Etiam in mollis quam. Mauris sagittis dignissim molestie. Suspendisse vulputate tincidunt accumsan.
 					</textarea>
-					<input type="radio" name="response" value="I agree" />
-					<input type="radio" name="response" value="I agree to disagree" />
+					<input type="text" name="response4" value="" placeholder="Do you agree" />
+					<input type="text" name="response5" value="" placeholder="Whats your name" />
 				</div>
 			</div>
 			<div class="page">

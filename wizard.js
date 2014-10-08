@@ -17,6 +17,15 @@ $.wizardError = function(error){
 $.wizardErrorRange = function(errors){
 	$.__wizardErrors.concat(errors);
 }
+$.wizardErrorCount = function(){
+	return $.__wizardErrors.length;
+}
+
+$.wizardHasErrors = function(){
+	//force a true or false
+	return $.__wizardErrors.length ? true : false;
+}
+
 $.__wizardGetContainer = function(wizard){
 	return $(wizard);
 }
@@ -47,7 +56,7 @@ $.__wizardStep = function(wizard,validateCall,pageIndex){
 	var prevButton = $(wizard + " .controls .prev-button");
 	var nextButton = $(wizard + " .controls .next-button");
 	var nextStep = null;
-
+	console.log(index);
 	//check to see if an index was found
 	
 	if(index !== false){
@@ -91,7 +100,6 @@ $.__wizardStep = function(wizard,validateCall,pageIndex){
 
 			var errors = $.__wizardErrors;
 			$(currentStep).addClass("hasErrors");
-
 			console.log("Errors were found");
 			console.log(errors);
 
@@ -116,7 +124,7 @@ $.wizard = function(callbacks,options){
 	var callbacks = callbacks;
 	if(callbacks == undefined || callbacks == null){
 		callbacks = {
-			validate: function(){},
+			validate: function(){ return true;},
 			serialize: function(e){
 				return $(e).serialize();
 			}
