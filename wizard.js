@@ -1,4 +1,6 @@
 
+$.__wizardErrors = [];
+
 $.wizardDefault = function(){
 	return {
 				alwaysOnTop : true,
@@ -8,6 +10,12 @@ $.wizardDefault = function(){
 				method: "POST",
 				wizard : ".wizard",
 		   };
+}
+$.wizardError = function(error){
+	$.__wizardErrors.push(error);
+}
+$.wizardErrorRange = function(errors){
+	$.__wizardErrors.concat(errors);
 }
 $.__wizardGetContainer = function(wizard){
 	return $(wizard);
@@ -47,35 +55,41 @@ $.__wizardStep = function(wizard,validateCall,pageIndex){
 		$(prevButton).show();
 		$(nextButton).show();
 
+		//now see if we are on the last page
 		if((index === (pageCount - 1))){
 			//show finish button
 			$(nextButton).hide();
 			$(prevButton).show();
 			$(finishButton).show();
 		}
-		if(index === 0){
+		//and see if we are on the first page
+		else if(index === 0){
 			$(prevButton).hide();
 		}
 		
 		var result  = null;
 
+		//see if we are going back
+		//if we are we skip validation
 		if(goingBack){
 			result = true;
 		}else{
-			result = validateCall(currentStep);
+			result = validateCall(index);
 		}
 		if(result === true){
 
 			$(wizard + " .page.active .errors").remove();
 			$(currentStep).removeClass("hasErrors");
 			$(currentStep).removeClass("active");
+			
 			nextStep  = $(wizard + " .page").get(index);
+			
 			$(nextStep).addClass("active");
 			$(wizard).trigger("wizard.pageInit",nextStep);
 		}
 		else{
 
-			var errors = result.errors;
+			var errors = $.__wizardErrors;
 			$(currentStep).addClass("hasErrors");
 
 			console.log("Errors were found");
@@ -90,33 +104,46 @@ $.__wizardStep = function(wizard,validateCall,pageIndex){
 	}
 }
 $.wizard = function(callbacks,options){
+
+	//get our options and set as needed
 	var options = options;
 	if(options == undefined || options == null){
 		options = $.wizardDefault();
 	}
+	
+
+	//get our callbacks and set defaults if needed
 	var callbacks = callbacks;
 	if(callbacks == undefined || callbacks == null){
 		callbacks = {
 			validate: function(){},
-
+			serialize: function(e){
+				return $(e).serialize();
+			}
 		}
 	}
+	if(callbacks.validate == undefined)
+		callbacks.validate = function(){};
+	if(callbacks.serialize == undefined)
+		callbacks.serialize = function(e){ return $(e).serialize(); };
+
+
 	var wizard = options.wizard;
 
+	//initial button showing
 	$(wizard + " .controls .finish-button").hide();
 	$(wizard + " .controls .next-button").show();
 	$(wizard + " .controls .prev-button").hide();
 
-	var pages = $(wizard + " .page");
-
+	
 	//hook into the finish button click
 	$(wizard + " .controls .finish-button").on("click",function(e){
 		e.preventDefault();
 		$.ajax({
-				url: $(wizard).attr("action"),
+				url: options.url,
 				method: options.method,
 				dataType: options.dataType,
-				data: $(wizard).serialize(),
+				data: callbacks.serialize(options.wizard),
 				success: function(data){
 					$(wizard).trigger("wizard.requestSuccess",data);
 				},
@@ -126,13 +153,15 @@ $.wizard = function(callbacks,options){
 			});
 		return false;
 	});
-
+	//hook into the next button
 	$(wizard + " .controls .next-button").on("click",function(e){
 		e.preventDefault();
 		var currentIndex = $.__wizardCurrentPageIndex(wizard);
 		$.__wizardStep(options.wizard,callbacks.validate,++currentIndex);
 		return false;
 	});
+
+	//hook into the prev button
 	$(wizard + " .controls .prev-button").on("click",function(e){
 		e.preventDefault();
 		var currentIndex = $.__wizardCurrentPageIndex(wizard);
