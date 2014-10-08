@@ -6,7 +6,7 @@ $.wizardDefault = function(){
 				url : null,
 				dataType : "json",
 				method: "POST",
-				wizard : ".wizard"
+				wizard : ".wizard",
 		   };
 }
 $.__wizardGetContainer = function(wizard){
@@ -30,6 +30,7 @@ $.__wizardCurrentPageIndex = function(wizard){
 	return pageIndex;
 }
 $.__wizardStep = function(wizard,validateCall,pageIndex){
+	
 	var pageCount = $.__wizardPageCount(wizard);
 	var currentStep = $.__wizardCurrentPage(wizard);
 	var index = pageIndex;
@@ -45,8 +46,7 @@ $.__wizardStep = function(wizard,validateCall,pageIndex){
 		$(finishButton).hide();
 		$(prevButton).show();
 		$(nextButton).show();
-		console.log(index);
-		console.log(pageCount);
+
 		if((index === (pageCount - 1))){
 			//show finish button
 			$(nextButton).hide();
@@ -70,7 +70,6 @@ $.__wizardStep = function(wizard,validateCall,pageIndex){
 			$(currentStep).removeClass("hasErrors");
 			$(currentStep).removeClass("active");
 			nextStep  = $(wizard + " .page").get(index);
-			console.log(nextStep);
 			$(nextStep).addClass("active");
 			$(wizard).trigger("wizard.pageInit",nextStep);
 		}
@@ -96,6 +95,12 @@ $.wizard = function(callbacks,options){
 		options = $.wizardDefault();
 	}
 	var callbacks = callbacks;
+	if(callbacks == undefined || callbacks == null){
+		callbacks = {
+			validate: function(){},
+
+		}
+	}
 	var wizard = options.wizard;
 
 	$(wizard + " .controls .finish-button").hide();
