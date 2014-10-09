@@ -11,8 +11,7 @@
 					//supply a generic validate function
 					validate: function(pageIndex){
 						//select all inputs and selects in the active page of a wizard
-					    $(".wizard .page.active .options input,.wizard .page.active .options input:checked, .wizard .page.active .options select").each(function(index,item){
-					    
+					    $(".wizard .page.active .options input,.wizard .page.active .options select").each(function(index,item){
 					    	if(!$(item).val() && !$(item).val().length){
 					    		//push an error onto the wizard
 					    		var error = {
