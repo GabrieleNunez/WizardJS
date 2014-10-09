@@ -1,3 +1,33 @@
+/*
+* Wizard.JS Jquery Plugin
+* Author: Gabriele M. Nunez (thecoconutcoder.com) (http://github.com/GabrieleNunez)
+* For example usage see https://github.com/GabrieleNunez/WizardJS
+* Summary: Wizard.JS makes interfaceing and making customizable and flexible Wizard Dialogs a breeze!
+* Events:
+*    - wizard.error 
+*			- function(errors){
+*				...your error handling code here
+*			}
+*	 - wizard.requestSuccess
+*	 		- function(data){
+*				...on successful ajax request code here
+*	 		}
+*	 - wizard.requestError
+*	 		- function(data){
+*				....on failed ajax request code here
+*	 		}
+*
+* Optional Callbacks:
+*     - validate
+*			- function(pageIndex){
+*				....your validation code here
+*			}
+*	  - serialize
+*	  		- function(wizard){
+*	  			....a serialized array of values ready to be sent through ajax
+*	  		}
+*
+*/
 
 $.__wizardErrors = [];
 
@@ -80,6 +110,10 @@ $.__wizardStep = function(wizard,validateCall,pageIndex){
 
 		//see if we are going back
 		//if we are we skip validation
+		//clear errors
+		while($.__wizardErrors.length > 0){
+			$.__wizardErrors.pop();
+		}
 		if(goingBack){
 			result = true;
 		}else{
@@ -99,6 +133,12 @@ $.__wizardStep = function(wizard,validateCall,pageIndex){
 		else{
 
 			var errors = $.__wizardErrors;
+			
+			index--;
+			console.log(index);
+			if(index === 0){
+				$(prevButton).hide();
+			}
 			$(currentStep).addClass("hasErrors");
 			console.log("Errors were found");
 			console.log(errors);
